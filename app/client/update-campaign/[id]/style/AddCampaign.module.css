@@ -1,0 +1,11 @@
+.rmsc_update {
+    --rmsc-main: #fefeff !important;
+    --rmsc-hover: #545658 !important;
+    --rmsc-selected: #2b2c2e !important;
+    --rmsc-border: #ccc !important;
+    --rmsc-gray: #aaa !important;
+    --rmsc-bg: #000 !important;
+    --rmsc-p: 10px !important;
+    --rmsc-radius: 4px !important;
+    --rmsc-h: 38px !important;
+}
