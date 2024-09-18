@@ -27,7 +27,9 @@ export interface ICampaign {
     filter_empty_referer: number,
     status: number,
     last_update_at: string,
-    link: string
+    link: string,
+    passed: number,
+    total: number
 
 }
 
@@ -108,5 +110,6 @@ export interface IStats {
     device: string,
     os: string,
     browser: string,
-    created_at: string
+    created_at: string,
+    type_page: string
 }

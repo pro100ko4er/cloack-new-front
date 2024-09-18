@@ -17,17 +17,17 @@ useEffect(() => {
     authed()
 }, [])
     return (
-        <div className="flex flex-col justify-center h-75">
-            <div className="form-container bg-slate-200 dark:bg-slate-800 p-7 rounded-lg m-20">
-                <div className="form-title mb-3">
+        <div className="container">
+            <div className="form-container bg-slate-200 dark:bg-background p-7 rounded-lg m-20">
+                <div className="form-title mb-3 bg-card flex items-center justify-center p-10 rounded-lg">
                     <p className="text-2xl">Authorization</p>
                 </div>
-                <div className="form-body">
+                <div className="form-body flex w-max-[75%]">
                 <Input type="text" onChange={e => setToken(e.currentTarget.value)} value={token} placeholder="Token" />
-                <Button variant={'outline'} disabled={isLoading} onClick={async () => await login()} className="bg-green-500 mt-5">
+                <Button variant={'secondary'} disabled={isLoading} onClick={async () => await login()} className="bg-card">
                     {
                         isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        "Please wait"</> : "Authorization"
+                        "Please wait"</> : "Log In"
                     }
                     
                     </Button>

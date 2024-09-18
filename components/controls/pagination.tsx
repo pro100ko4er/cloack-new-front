@@ -6,6 +6,7 @@ import {
     PaginationNext,
     PaginationPrevious,
   } from "@/components/ui/pagination"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
 export interface PaginationElementProps {
@@ -37,7 +38,7 @@ export default function PaginationElement(props: PaginationElementProps) {
 <Pagination>
   <PaginationContent>
     <PaginationItem onClick={() => currentPage >= 1 && onClickPrevious()}>
-      <PaginationPrevious href="#" />
+    <ChevronLeft />
     </PaginationItem>
     {
           currentPage + 1 !== data[0] && current - 4 > 0 ?
@@ -73,7 +74,7 @@ export default function PaginationElement(props: PaginationElementProps) {
       ''
         }
     <PaginationItem onClick={() => currentPage < data.length - 1 && onClickNext()}>
-      <PaginationNext href="#" />
+    <ChevronRight />
     </PaginationItem>
   </PaginationContent>
 </Pagination>

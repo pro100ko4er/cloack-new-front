@@ -165,3 +165,26 @@
 .orange-text {
   color: #F2994A !important;
 }
+
+.gray-text {
+  color: #64798C;
+}
+
+
+/* other */
+
+.border-none-focus:focus {
+  border: none !important;
+  outline: 0 !important;
+  outline-width: 0 !important;
+  
+}
+
+.border-input-dark {
+  border: 2px solid #637483;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+

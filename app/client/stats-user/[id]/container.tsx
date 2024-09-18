@@ -16,8 +16,21 @@ import { Input } from "@/components/ui/input";
 import pagination from "@/components/utils/pagination";
 import { useEffect, useMemo, useState } from "react";
 import {format} from 'date-fns'
-
-
+import InputIconComponent from "@/components/controls/inputs/InputIcon";
+import { MonitorDot, Search, Smartphone, Tablet, Tv } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import StatsItem from "@/components/common/stats-item";
+import { Accordion } from "@radix-ui/react-accordion";
+import AppAccordeon from "@/components/controls/app-accordeon";
+import { MultiSelect } from "react-multi-select-component";
+import { SelectedProps } from "../../add-campaign/container";
+import classes from './style/StatsUser.module.css'
+import android from '../../../../assets/svg-photos/os-icons/android.svg'
+import ios from '../../../../assets/svg-photos/os-icons/ios.svg'
+import macos from '../../../../assets/svg-photos/os-icons/macos.svg'
+import windows from '../../../../assets/svg-photos/os-icons/windows.svg'
+import linux from '../../../../assets/svg-photos/os-icons/linux.svg'
 
 export default function StatsUserContainer({ params }: { params: { id: string } }) {
 
@@ -30,85 +43,96 @@ export default function StatsUserContainer({ params }: { params: { id: string } 
         authed()
     }, [])
 
-    const headers = [
-        {data: "ID", className: ''},
-        // {data: "Token", className: ''},
-        {data: "Campaign ID", className: ''},
-        {data: "IP", className: ''},
-        {data: "Country", className: ''},
-        {data: "User Agent", className: ''},
-        {data: "Page", className: ''},
-        {data: "Referer", className: ''},
-        {data: "Device", className: ''},
-        {data: "OS", className: ''},
-        {data: "Browser", className: ''},
-        {data: "Created at", className: ''}
+    const devices_array = [
+        {value: "desktop", label: <div className="flex flex-wrap gap-2"><MonitorDot size={20} />Desktop</div>},
+        {value: "mobile", label: <div className="flex flex-wrap gap-2"><Smartphone size={20} />Mobile</div>},
+        {value: "tablet", label: <div className="flex flex-wrap gap-2"><Tablet size={20} />Tablet</div>},
+        {value: "tv", label: <div className="flex flex-wrap gap-2"><Tv size={20} />TV</div>}
     ]
 
-    const tableData1: TableData = {
-        headers, data: [
-            [
-            {data: "4334", className: ''},
-            {data: "5gregreg^&huJHUufvedhu", className: ''},
-            {data: "545", className: ''},
-            {data: "127.0.0.1", className: ''},
-            {data: "USA", className: ''},
-            {data: "Mozilla 7.0", className: ''},
-            {data: "Black", className: ''},
-            {data: "Google", className: ''},
-            {data: "Desktop", className: ''},
-            {data: "Windows 10.0", className: ''},
-            {data: "Chrome", className: ''},
-            {data: "12.08.2024", className: ''}
-        ],
-        [
-            {data: "4334", className: ''},
-            {data: "5gregreg^&huJHUufvedhu", className: ''},
-            {data: "545", className: ''},
-            {data: "127.0.0.1", className: ''},
-            {data: "USA", className: ''},
-            {data: "Mozilla 7.0", className: ''},
-            {data: "Black", className: ''},
-            {data: "Google", className: ''},
-            {data: "Desktop", className: ''},
-            {data: "Windows 10.0", className: ''},
-            {data: "Chrome", className: ''},
-            {data: "12.08.2024", className: ''}
-        ],
-        [
-            {data: "4334", className: ''},
-            {data: "5gregreg^&huJHUufvedhu", className: ''},
-            {data: "545", className: ''},
-            {data: "127.0.0.1", className: ''},
-            {data: "USA", className: ''},
-            {data: "Mozilla 7.0", className: ''},
-            {data: "Black", className: ''},
-            {data: "Google", className: ''},
-            {data: "Desktop", className: ''},
-            {data: "Windows 10.0", className: ''},
-            {data: "Chrome", className: ''},
-            {data: "12.08.2024", className: ''}
-        ],
-        [
-            {data: "4334", className: ''},
-            {data: "5gregreg^&huJHUufvedhu", className: ''},
-            {data: "545", className: ''},
-            {data: "127.0.0.1", className: ''},
-            {data: "USA", className: ''},
-            {data: "Mozilla 7.0", className: ''},
-            {data: "Black", className: ''},
-            {data: "Google", className: ''},
-            {data: "Desktop", className: ''},
-            {data: "Windows 10.0", className: ''},
-            {data: "Chrome", className: ''},
-            {data: "12.08.2024", className: ''}
-        ],
+    const os_array = [
+        {value: "windows", label: <div className="flex flex-wrap gap-2"><img width={20} height={20} src={windows.src} />Windows</div>},
+        {value: "ios", label: <div className="flex flex-wrap gap-2"><img width={20} height={20} src={ios.src} />iOS</div>},
+        {value: "android", label: <div className="flex flex-wrap gap-2"><img width={20} height={20} src={android.src} />Android</div>},
+        {value: "macos", label: <div className="flex flex-wrap gap-2"><img width={20} height={20} src={macos.src} />macOS</div>},
+        {value: "linux", label: <div className="flex flex-wrap gap-2"><img width={20} height={20} src={linux.src} />Linux</div>}
     ]
-    }
 
+    const browsers_array = [
+        {value: "Desktop", label: <div className="flex flex-wrap gap-2"><MonitorDot size={20} />Desktop</div>},
+        {value: "Mobile", label: <div className="flex flex-wrap gap-2"><Smartphone size={20} />Mobile</div>},
+        {value: "Tablet", label: <div className="flex flex-wrap gap-2"><Tablet size={20} />Tablet</div>},
+        {value: "Tv", label: <div className="flex flex-wrap gap-2"><Tv size={20} />TV</div>}
+    ]
 
-    const [stats, setStats] = useState<IStats[]>()
-    const [tableData, setTableData] = useState<TableData>()
+    const [selectedDevices, setSelectedDevices] = useState<SelectedProps[]>([])
+
+    const [selectedOs, setSelectedOs] = useState<SelectedProps[]>([])
+
+    const [selectedBrowsers, setSelectedBrowsers] = useState<SelectedProps[]>([])
+
+    const [stats, setStats] = useState<IStats[]>([
+        {
+            id: 1,
+            token: 'grwegtehgterh',
+            campaign_id: 2,
+            ip: '127.0.0.1',
+            country: 'Russia',
+            user_agent: "Google",
+            page: "Black",
+            referer: "Yandex",
+            device: "Android",
+            os: "Android",
+            browser: "Mozilla",
+            created_at: format(new Date().toString(), 'dd.MM.yyyy HH:mm'),
+            type_page: 'white'
+        },
+        {
+            id: 2,
+            token: 'grwegtehgterh',
+            campaign_id: 2,
+            ip: '127.0.0.1',
+            country: 'Russia',
+            user_agent: "Google",
+            page: "Black",
+            referer: "Yandex",
+            device: "Android",
+            os: "Android",
+            browser: "Mozilla",
+            created_at: format(new Date().toString(), 'dd.MM.yyyy HH:mm'),
+            type_page: 'black'
+        },
+        {
+            id: 3,
+            token: 'grwegtehgterh',
+            campaign_id: 2,
+            ip: '127.0.0.1',
+            country: 'Russia',
+            user_agent: "Google",
+            page: "Black",
+            referer: "Yandex",
+            device: "Android",
+            os: "Android",
+            browser: "Mozilla",
+            created_at: format(new Date().toString(), 'dd.MM.yyyy HH:mm'),
+            type_page: 'black'
+        },
+        {
+            id: 4,
+            token: 'grwegtehgterh',
+            campaign_id: 2,
+            ip: '127.0.0.1',
+            country: 'Russia',
+            user_agent: "Google",
+            page: "Black",
+            referer: "Yandex",
+            device: "Android",
+            os: "Android",
+            browser: "Mozilla",
+            created_at: format(new Date().toString(), 'dd.MM.yyyy HH:mm'),
+            type_page: 'white'
+        },
+    ])
     const [limit, setLimit] = useState<number>(100)
     const [page, setPage] = useState<number>(0)
     const [pages, setPages] = useState([0])
@@ -131,31 +155,8 @@ export default function StatsUserContainer({ params }: { params: { id: string } 
 
     const [getStats, isLoadingStats, errorStats, errorsStats] = useFetch(async () => {
         const result = await StatsService.GetStatsForUserCampaign(id, page, limit)
-        setStats(result.data.stats.stats)
-        const tempTableData: TableData = {
-            headers,
-            data: []
-        }
         if(result.data.stats) {
-        result.data.stats.stats.forEach(c => {
-            tempTableData.data.push(
-                [
-                    {data: c.id, className: ''},
-                    // {data: c.token, className: ''},
-                    {data: c.campaign_id, className: ''},
-                    {data: c.ip, className: ''},
-                    {data: c.country, className: ''},
-                    {data: c.user_agent, className: ''},
-                    {data: c.page, className: ''},
-                    {data: c.referer, className: ''},
-                    {data: c.device, className: ''},
-                    {data: c.os, className: ''},
-                    {data: c.browser, className: ''},
-                    {data: format(c.created_at, 'dd.MM.yyyy HH:mm'), className: ''}
-                ]
-            )
-        })
-        setTableData(tempTableData)
+        // setStats(result.data.stats.stats)
         const amountPages = pagination(result.data.stats.count, limit)
         console.log(amountPages)
         setPages(Array(amountPages + 1).fill(0).map((e, i) => i + 1))
@@ -178,22 +179,71 @@ export default function StatsUserContainer({ params }: { params: { id: string } 
         <div className="wrapper">
         <NavBar data={routes} />
         <div className="container mt-10">
-            <Card className="p-5">
-            <div className="title-container mb-5">
-                <h1 className="text-3xl">
+        <div className="title-page mb-10">
+                <div className="text-3xl bg-card rounded-lg pt-6 pb-6 pl-5 pr-5 success rounded-50 flex items-center justify-between">
                     Statistics of campaign ID {id}
-                </h1>
+                    <Button variant={'secondary'}>
+                        Guest access
+                    </Button>
+                    </div>
             </div>
              
-            <div className="wrapper-search">
-                <Input type="string" placeholder="Search stats to id, campaign id, token..." />
-            </div>
-            <TableComponent 
-            caption="Stats" 
-            data={tableData} 
-            isLoading={isLoadingStats}
+            <div className="wrapper-search flex flex-wrap align-end mb-5">
+            <div className="container search flex items-center justify-between">
+                <div className="container filters flex items-center flex-wrap gap-2">
+                <MultiSelect 
+            options={devices_array} 
+            value={selectedDevices}
+            onChange={setSelectedDevices}
+            labelledBy="Devices"
+            
+            className={`${classes.rmsc_update} min-w-[200px] w-[15%]`}
+            valueRenderer={(selected, _options) => {
+              console.log(selected)
+              return selected.length
+    ? selected.map(({ value, label }) => value + ' ') : "Devices"
+  ;
+            }}
+            filterOptions={(options, filter) => filter ? options.filter(op => op.value.toLowerCase().includes(filter.toLowerCase())) : options}
             />
-            <hr className="mb-3 mt-3" />
+                     <MultiSelect 
+            options={os_array} 
+            value={selectedOs}
+            onChange={setSelectedOs}
+            labelledBy="Devices"
+            className={`${classes.rmsc_update} min-w-[200px] w-[15%]`}
+            valueRenderer={(selected, _options) => {
+              console.log(selected)
+              return selected.length
+    ? selected.map(({ value, label }) => value + ' ') : "OS"
+  ;
+            }}
+            filterOptions={(options, filter) => filter ? options.filter(op => op.value.toLowerCase().includes(filter.toLowerCase())) : options}
+            />
+                     <MultiSelect 
+            options={browsers_array} 
+            value={selectedBrowsers}
+            onChange={setSelectedBrowsers}
+            labelledBy="Devices"
+            className={`${classes.rmsc_update} min-w-[200px] w-[15%]`}
+            valueRenderer={(selected, _options) => {
+              console.log(selected)
+              return selected.length
+    ? selected.map(({ value, label }) => value + ' ') : "Browser"
+  ;
+            }}
+            filterOptions={(options, filter) => filter ? options.filter(op => op.value.toLowerCase().includes(filter.toLowerCase())) : options}
+            />
+                </div>
+                <InputIconComponent icon={<Search />} type="string" placeholder="Search stats" />
+            </div>
+            </div>
+            <div className="container stats">
+                <AppAccordeon 
+                    data={stats}
+                    itemRender={(item) => StatsItem(item)}
+                />
+            </div>
             <PaginationElement 
             onClick={onClickPage} 
             onClickNext={onClickNextPage} 
@@ -201,7 +251,7 @@ export default function StatsUserContainer({ params }: { params: { id: string } 
             data={pages} 
             currentPage={page}
             />
-            </Card>
+            
         </div>
         </div>
         </ThemeProvider>

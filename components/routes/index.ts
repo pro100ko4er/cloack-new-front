@@ -12,7 +12,7 @@ export interface NavBarInterface {
 
 
 export const routes: NavBarInterface[] = [
-    {title: "Personal account", href: "/client/lk-user"},
+    {title: "Campaigns", href: "/client/lk-user"},
     {title: "Create campaign", href: "/client/add-campaign"},
     // {title: "Statistics", href: "/client/stats-user"},
 

@@ -21,7 +21,7 @@ import CampaignService from "@/components/context/services/CampaignService";
 import { MultiSelect } from "react-multi-select-component";
 import { useRouter } from "next/navigation";
 import { Toaster } from "@/components/ui/toaster";
-import classes from './style/AddCampaign.module.css'
+import classes from './style/UpdateCampaign.module.css'
 import { toast } from "@/hooks/use-toast";
 import { ICampaignBody, ICampaignUpdateBody } from "@/components/context/types/schemes";
 
