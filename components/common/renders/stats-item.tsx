@@ -1,4 +1,4 @@
-import { IStats } from "../context/types/schemes";
+import { IStats } from "../../context/types/schemes";
 import {
     Accordion,
     AccordionContent,

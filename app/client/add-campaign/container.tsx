@@ -23,13 +23,14 @@ import CampaignService from "@/components/context/services/CampaignService";
 import { ICampaignBody } from "@/components/context/types/schemes";
 import { Toaster } from "@/components/ui/toaster";
 import { toast } from "@/hooks/use-toast";
-import { ClipboardX, MonitorDot, Save, ShieldCheck, ShieldMinus, Smartphone, Tablet, Tv } from "lucide-react";
+import { Check, ClipboardX, Info, MonitorDot, Save, ShieldCheck, ShieldMinus, Smartphone, Tablet, Tv, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import facebook from '../../../assets/facebook.png'
 import google from '../../../assets/google.png'
 import tiktok from '../../../assets/tiktok.png'
 import reddit from '../../../assets/reddit.png'
 import youtube from '../../../assets/youtube.png'
+import { ModalInfo } from "@/components/controls/modals/modal-info";
 export interface SelectedProps {
   label: string,
   value: string
@@ -85,11 +86,17 @@ for(let i in countriesTemp) {
 
 const theme = useAppSelector(state => state.themeReducer)
  
+
+
   const [name, setName] = useState<string>('')
 
   const [whitePage, setWhitePage] = useState<string>('')
 
+  const [typeLoadWhitePage, setTypeLoadWhitePage] = useState<string>('')
+
   const [blackPage, setBlackPage] = useState<string>('')
+
+  const [typeLoadBlackPage, setTypeLoadBlackPage] = useState<string>('')
 
   const [status, setStatus] = useState<string>('')
 
@@ -188,6 +195,9 @@ const theme = useAppSelector(state => state.themeReducer)
         referer_referers: referers,
         filter_empty_referer: filterEmptyReferer,
         status: status === '1' ? true : false,
+        type_load_black_page: typeLoadBlackPage,
+        type_load_white_page: typeLoadWhitePage,
+        true_safe: typeLoadWhitePage === 'true_safe' ? true : false
       }
       // console.log(addCampaignBody)
       const create = await CampaignService.AddCampaign(addCampaignBody)
@@ -222,8 +232,8 @@ const theme = useAppSelector(state => state.themeReducer)
     }
 
     useMemo(() => {
-      console.log(selectedCountries)
-    }, [selectedCountries])
+      console.log(typeLoadWhitePage)
+    }, [typeLoadWhitePage])
 
     return (
       <ThemeProvider
@@ -234,38 +244,24 @@ const theme = useAppSelector(state => state.themeReducer)
       >
       <div className="wrapper">
         <NavBar data={routes} />
-        <img
-  src="https://flagcdn.com/16x12/ua.png"
-  srcSet="https://flagcdn.com/32x24/ua.png 2x,
-    https://flagcdn.com/48x36/ua.png 3x"
-  width="16"
-  height="12"
-  alt="Украина" />
         <Toaster />
        <div className="container mt-10 mb-10">
-        <div className="header flex gap-4 mb-5">
-        <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                Campaign controller
-        </h1>
-        <div className="hidden items-center md:ml-auto md:flex gap-3">
-                <Button onClick={() => leavePage()} variant="customDestructive" className="bg-red-500 gap-2" size="sm">
-                <ClipboardX /> Discard
-                </Button>
-                <Button onClick={() => createCampaign()} variant={'success'} className="bg-green-500 gap-2" size="sm">
-                <Save /> Save campaign
-                  </Button>
-              </div>
+        <div className="header gap-4 mb-5">
+        <div className="title-page mb-10">
+                <div className="text-3xl bg-card rounded-lg pt-6 pb-6 pl-5">Campaign controller</div>
+            </div>
         </div>
-        <div className="form-container">
+        <div className="form-container flex flex-wrap md:flex-nowrap">
 
-        <Card className="form-filters border p-3 mb-10">
-            <CardHeader>
+        <div className="form-filters p-3 mb-10">
+            <CardHeader className="p-0 pt-6">
             <CardTitle className="title-container container text-2xl mb-5">Filters campaign</CardTitle>
             </CardHeader>
-            <div className="container flex flex-wrap gap-20 items-start">
+            <div className="container flex flex-wrap gap-5 items-start">
 
 
             <div className="first-container">
+            <div className="switchers flex flex-wrap gap-5">
             <div className="input-container mb-10 flex items-center gap-3"> 
             <Switch 
             onCheckedChange={checked => setVpnProxy(checked)} 
@@ -288,29 +284,43 @@ const theme = useAppSelector(state => state.themeReducer)
             id="maximum-clicks-by-ip" 
             className={maximumClicksByIp ? 'switcher-checked' : ''}
             />
-            <Label htmlFor="maximum-clicks-by-ip">Maximum clicks by ip</Label>
+            <Label htmlFor="maximum-clicks-by-ip">Maximum clicks from one IP</Label>
+            </div>
+            <div className="input-container mb-10 flex items-center gap-3"> 
+            <Switch 
+            onCheckedChange={checked => setFilterEmptyReferer(checked)} 
+            id="filter-empty-referer" 
+            className={filterEmptyReferer ? 'switcher-checked' : ''}
+            />
+            <Label htmlFor="filter-empty-referer">Filter empty referer</Label>
+            </div>
             </div>
             <div className="input-container mb-5"> 
-            <InputComponent disabled={maximumClicksByIp ? false : true} value={numberMaximumClicksByIp} onChange={e => checkNumberInput(e.currentTarget.value) && setNumberMaximumClicksByIp(Number(e.currentTarget.value))} label="Count clicks by ip" placeholder="Count" />
+            <InputComponent 
+            disabled={maximumClicksByIp ? false : true} 
+            value={numberMaximumClicksByIp} 
+            onChange={e => checkNumberInput(e.currentTarget.value) && setNumberMaximumClicksByIp(Number(e.currentTarget.value))} label="Numbers of clicks from one IP" 
+            placeholder="Count" 
+            className="border border-card"
+            classNameContainer="max-w-full"
+            classNameLabel={`${!maximumClicksByIp && 'gray-text'} text-1xl`}
+            />
             <span className="error-field error-name-field">
                 {errorCountClicks}
             </span>
             </div>
             </div>
 
-            <div className="second-container w-[65%]">
+            <div className="second-container container">
             <div className="input-container mb-5"> 
-            <div className="checkbox-container mb-3 flex items-center gap-3">
-            <Checkbox onCheckedChange={checked => setAllowGeoFilter(checked)} id="allow-geo-filter" />
-            <Label htmlFor="allow-geo-filter">Allow geo filter</Label>
-            </div>
-            <div className="container-select-search">
+            <Label className="mb-3 text-1xl">Geo filter</Label>
+            <div className="container-select-search mt-2">
             <MultiSelect 
             options={countries_array} 
             value={selectedCountries}
             onChange={setSelectedCountries}
             labelledBy="Countries"
-            className={`${classes.rmsc_update}`}
+            className={`${classes.rmsc_update} max-w-full`}
             valueRenderer={(selected, _options) => {
               console.log(selected)
               return selected.length
@@ -320,13 +330,14 @@ const theme = useAppSelector(state => state.themeReducer)
             filterOptions={(options, filter) => filter ? options.filter(op => op.value.toLowerCase().includes(filter.toLowerCase()) || op.label.props.children[1].toLowerCase().includes(filter.toLowerCase())) : options}
             />
             </div>
+            <div className="checkbox-container mb-3 mt-3 flex items-center gap-3">
+            <Checkbox onCheckedChange={checked => setAllowGeoFilter(checked)} id="allow-geo-filter" />
+            <Label htmlFor="allow-geo-filter">Allow geo filter</Label>
+            </div>
             </div>
             <div className="input-container mb-5"> 
-            <div className="checkbox-container mb-3 flex items-center gap-3">
-            <Checkbox onCheckedChange={checked => setAllowDeviceFilter(checked)} id="allow-device-filter" />
-            <Label htmlFor="allow-device-filter">Allow device filter</Label>
-            </div>
-            <div className="container-select-search"> 
+            <Label className="mb-3 text-1xl">Geo filter</Label>
+            <div className="container-select-search mt-2 mb-2"> 
             <MultiSelect 
             options={devices_array} 
             value={selectedDevices}
@@ -342,16 +353,28 @@ const theme = useAppSelector(state => state.themeReducer)
             filterOptions={(options, filter) => filter ? options.filter(op => op.value.toLowerCase().includes(filter.toLowerCase())) : options}
             />
             </div>
+            <div className="checkbox-container mb-3 flex items-center gap-3">
+            <Checkbox onCheckedChange={checked => setAllowDeviceFilter(checked)} id="allow-device-filter" />
+            <Label htmlFor="allow-device-filter text-1xl">Allow device filter</Label>
+            </div>
             </div>
             <div className="input-container mb-5"> 
-            <div className="checkbox-container mb-3 flex items-center gap-3">
+            <Label className="mb-3 text-1xl">Referer filter</Label>
+            <div className="container-textarea mt-2">
+            <Textarea 
+            value={referers} 
+            onChange={e => setReferers(e.currentTarget.value)} 
+            placeholder="Enter referers separated by commas" 
+            className="border border-card shadow-lg"
+            rows={5}
+            />
+            <div className="checkbox-container mb-3 mt-2 flex items-center gap-3">
             <Checkbox onCheckedChange={checked => setAllowRefererFilter(checked)} id="allow-referer-filter" />
             <Label htmlFor="allow-referer-filter">Allow referer filter</Label>
             </div>
-            <div className="container-textarea">
-            <Textarea value={referers} onChange={e => setReferers(e.currentTarget.value)} placeholder="Enter referers separated by commas" />
+            <Label>Fast referers</Label>
             <div className="referers-container flex flex-wrap gap-5 mt-2">
-              <div className="checkbox-container flex row flex-wrap items-center justify-center gap-2">
+            <div className="checkbox-container flex row flex-wrap items-center justify-center gap-2">
             <Checkbox onCheckedChange={checked => setFilterEmptyReferer(checked)} id="facebook-referer" />
             <Label className="flex flex-wrap gap-1 items-center justify-center" htmlFor="facebook-referer">
              <img src={facebook.src} width={24} height={24} /> Facebook
@@ -384,77 +407,110 @@ const theme = useAppSelector(state => state.themeReducer)
             </div>
             </div>
             </div>
-            <div className="input-container mb-5 flex items-center gap-3"> 
-            <Checkbox onCheckedChange={checked => setFilterEmptyReferer(checked)} id="filter-empty-referer" />
-            <Label htmlFor="filter-empty-referer">Filter empty referer</Label>
-            </div>
+            
             </div>
 
             </div>
-            </Card>
+            </div>
 
-        <Card className="form-pages p-3">
-            <div className="container flex flex-wrap items-center justify-between pl-20 pr-20">
-            <div className="first-container">
-            <CardHeader>
+        <div className="form-pages p-3 container">
+            <div className="container flex flex-wrap items-center justify-between">
+            <div className="first-container container">
+            <CardHeader className="p-0 pt-6">
             <CardTitle className="title-container text-2xl mb-5">Pages of campaign</CardTitle>
             </CardHeader>
-            <div className="input-container mb-5"> 
-            <InputComponent value={name} onChange={e => setName(e.currentTarget.value)} label="Name" placeholder="Name" />
+            <div className="input-container mb-5 container"> 
+            <InputComponent 
+            className="border border-card shadow-lg" 
+            classNameContainer="max-w-full" 
+            value={name} 
+            onChange={e => setName(e.currentTarget.value)} 
+            label="Name" 
+            placeholder="Name" 
+            classNameLabel="text-1xl"
+            />
             <div className="error-field error-name-field">
                 {errorName}
             </div>
             </div>
             <div className="input-container mb-5"> 
-            <InputComponent value={blackPage} onChange={e => setBlackPage(e.currentTarget.value)} label="Black page" placeholder="Black page" />
+            <InputComponent 
+            className="border border-card shadow-lg" 
+            classNameContainer="max-w-full" 
+            value={blackPage} 
+            onChange={e => setBlackPage(e.currentTarget.value)} 
+            label="Black page" 
+            placeholder="Black page" 
+            classNameLabel="text-1xl"
+            />
             <div className="error-field error-name-field">
                 {errorBlackPage}
             </div>
             <div className="method-visible flex gap-2 mt-2">
-            <RadioGroup className="flex flex-wrap gap-2">
+            <RadioGroup onValueChange={e => setTypeLoadBlackPage(e)} className="flex flex-wrap gap-4">
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="show content" id="r2" />
+        <RadioGroupItem className="rounded-sm" value="show_content" id="r2" />
         <Label className="success-text" htmlFor="r2">Show content</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="redirect" id="r3" />
-        <Label className="orange-text" htmlFor="r3">Redirect</Label>
+        <RadioGroupItem className="rounded-sm" value="redirect" id="r3" />
+        <Label className="destructive-text" htmlFor="r3">Redirect</Label>
       </div>
     </RadioGroup>
             </div>
             </div>
             <div className="input-container mb-5"> 
-            <InputComponent value={whitePage} onChange={e => setWhitePage(e.currentTarget.value)} label="White page" placeholder="White page" />
+            <InputComponent 
+            className="border border-card shadow-lg" 
+            classNameContainer="max-w-full" 
+            value={whitePage} 
+            onChange={e => setWhitePage(e.currentTarget.value)} 
+            label="White page" 
+            disabled={typeLoadWhitePage === 'true_safe'} 
+            placeholder="White page" 
+            classNameLabel="text-1xl"
+            />
             <div className="error-field error-name-field">
                 {errorWhitePage}
             </div>
             <div className="method-visible flex gap-2 mt-2">
-            <RadioGroup className="flex flex-wrap gap-2">
+            <RadioGroup onValueChange={e => setTypeLoadWhitePage(e)} className="flex flex-wrap gap-4">
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="show content" id="r4" />
+        <RadioGroupItem className="rounded-sm" value="show_content" id="r4" />
         <Label className="success-text" htmlFor="r4">Show content</Label>
       </div>
       <div className="flex items-center space-x-2">
-        <RadioGroupItem value="redirect" id="r5" />
-        <Label className="orange-text" htmlFor="r5">Redirect</Label>
+        <RadioGroupItem className="rounded-sm" value="redirect" id="r5" />
+        <Label className="destructive-text" htmlFor="r5">Redirect</Label>
+      </div>
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem className="rounded-sm" value="true_safe" id="r6" />
+        <Label className="purple-text flex items-center" htmlFor="r6">True safe <ModalInfo 
+        title='Info of "True safe" option'
+        description="True safe option use when you want redirect on to one from list random white pages"
+        showDialogNameButton={<Info className="relative right-4 bottom-2" size={15} />}
+        confirmButtonName="OK"
+        onClickConfirm={() => console.log("confirm")}
+        /></Label>
+
       </div>
     </RadioGroup>
             </div>
             </div>
             </div>
-            <div className="form-status mt-10 border-none p-3">
-            <CardHeader>
-            <CardTitle className="title-container text-2xl mb-5">Status campaign</CardTitle>
+            <div className="form-status container mt-10 border-none">
+            <CardHeader className="p-0">
+            <CardTitle className="title-container text-2xl mb-5">Campaign status</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
                     <div className="grid gap-6">
                       <div className="grid gap-3">
-                        <Label htmlFor="status">Status</Label>
+                        <Label className="text-1xl" htmlFor="status">Status</Label>
                         <Select value={status} onValueChange={e => setStatus(e)}>
-                          <SelectTrigger id="status" aria-label="Select status">
+                          <SelectTrigger className={`border border-card ${status === '1' ? 'success' : status === '0' ? 'destructive' : ''}`} id="status" aria-label="Select status">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="border border-card">
                             <SelectItem value="0">
                              <div className="flex items-center gap-2"> 
                              🔴 Deactivated
@@ -465,6 +521,16 @@ const theme = useAppSelector(state => state.themeReducer)
                               </SelectItem>
                           </SelectContent>
                         </Select>
+                        <div className="actions-buttons flex flex-row-reverse md:flex-row items-center md:items-start justify-center md:justify-start gap-5">
+                          <Button onClick={() => createCampaign()} className="gap-2" variant={'success'}>
+                          <Check />
+                            Save campaign
+                          </Button>
+                          <Button onClick={() => leavePage()} className="gap-2" variant={'customDestructive'}>
+                          <X />
+                            Discard
+                          </Button>
+                        </div>
                         <div className="error-field error-name-field">
                 {errorStatus}
             </div>
@@ -473,18 +539,10 @@ const theme = useAppSelector(state => state.themeReducer)
                   </CardContent>
             </div>
             </div>
-            </Card>
+            </div>
              
 
         </div>
-        <div className="flex items-center justify-center gap-2 md:hidden mt-5">
-        <Button onClick={() => leavePage()} variant="customDestructive" className="bg-red-500 gap-2" size="sm">
-                <ClipboardX /> Discard
-                </Button>
-                <Button onClick={() => createCampaign()} variant={'success'} className="bg-green-500 gap-2" size="sm">
-                <Save /> Save campaign
-                  </Button>
-            </div>
        </div>
        </div>
        </ThemeProvider>

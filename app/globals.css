@@ -170,6 +170,18 @@
   color: #64798C;
 }
 
+.white-text {
+  color: white;
+}
+
+.destructive-text {
+  color: #E64800 !important;
+}
+
+.purple-text {
+  color: #D865E4 !important
+}
+
 
 /* other */
 
@@ -188,3 +200,6 @@
   text-decoration: none !important;
 }
 
+.border-input-linear {
+  background: linear-gradient(90deg, rgba(66,90,111,1) 0%, rgba(100,121,140,1) 100%);
+}

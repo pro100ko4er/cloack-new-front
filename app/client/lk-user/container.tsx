@@ -13,14 +13,15 @@ import { ThemeProvider } from "@/components/common/theme-provider";
 import CampaignService from "@/components/context/services/CampaignService";
 import useFetch from "@/components/hooks/useFetch";
 import { ICampaign } from "@/components/context/types/schemes";
-import { ModalConfirm } from "@/components/controls/modal-confirm";
+import { ModalConfirm } from "@/components/controls//modals/modal-confirm";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import pagination from "@/components/utils/pagination";
 import {format} from 'date-fns'
 import InputIconComponent from "@/components/controls/inputs/InputIcon";
 import AppTableCampaigns, { AppTableCampaignsData } from "@/components/controls/tables/app-table-campaigns";
-import CampaignItem from "@/components/common/campaign-item";
+import CampaignItem from "@/components/common/renders/campaign-item";
+import { useRouter } from "next/navigation";
 
 
 
@@ -29,24 +30,18 @@ export default function LkUserContainer() {
 
     const {authed, isLoading, error, errors} = useAuthed()
 
+    const router = useRouter()
+
     useEffect(() => {
         authed()
     }, [])
 
     const auth = useAppSelector(state => state.authReducer)
 
-    const headers =  [
-        // {data: "ID", className: ''},
-        // {data: "Token", className: ''},
-        {data: <div className="flex items-center jusitfy-center gap-2"><Pencil1Icon />Name</div>, className: ''},
-        {data: <div className="flex items-center jusitfy-center gap-2"><LinkBreak1Icon />Status</div>, className: ''},
-        {data: <div className="flex items-center jusitfy-center gap-2"><ClockIcon />Last updated at</div>, className: ''},
-        {data: <div className="flex items-center jusitfy-center gap-2"><TransformIcon />Actions</div>, className: ''},
-    ]
 
     const mockData: AppTableCampaignsData[] = [
         {
-            id: 5,
+            id: 1,
             name: 'Micha',
             page: 'google',
             status: 'active',
@@ -56,7 +51,7 @@ export default function LkUserContainer() {
             link: 'ghtht'
         },
         {
-            id: 5,
+            id: 2,
             name: 'Micha',
             page: 'google',
             status: 'deactivated',
@@ -66,7 +61,7 @@ export default function LkUserContainer() {
             link: 'ghtht'
         },
         {
-            id: 5,
+            id: 3,
             name: 'Micha',
             page: 'google',
             status: 'active',
@@ -76,7 +71,7 @@ export default function LkUserContainer() {
             link: 'ghtht'
         },
         {
-            id: 5,
+            id: 4,
             name: 'Micha',
             page: 'google',
             status: 'deactivated',
@@ -98,12 +93,12 @@ export default function LkUserContainer() {
     ]
 
     const [campaigns, setCampaigns] = useState<ICampaign[]>()
-    const [tableData, setTableData] = useState<TableData>()
     const [page, setPage] = useState<number>(0)
     const [pages, setPages] = useState([1,2,3,4,5])
     const [limit, setLimit] = useState<number>(100)
+    const [selectedCampaign, setSelectedCampaign] = useState<string>('')
 
-    const removeCampaign = async (id: number) => {
+    const removeCampaign = async (id: number | string) => {
         const remove = await CampaignService.RemoveCampaign(id)
         if(remove.data.status === 'ok') {
             toast({
@@ -111,14 +106,6 @@ export default function LkUserContainer() {
                 description: `Campaign ${id} deleted success!`
             })
             setCampaigns(prev => prev?.filter(c => c.id !== id))
-            setTableData(prev => {
-                let tempData: TableDataElemInterface[][] = []
-                if(prev && tempData) {
-                tempData = prev?.data.filter(d => !d.find(f => f.data === id))
-                prev.data = tempData
-                }
-                return prev
-            })
         }
         else {
             toast({
@@ -143,6 +130,7 @@ export default function LkUserContainer() {
 
     const theme = useAppSelector(state => state.themeReducer)
 
+
     const onClickPage = (page: number) => {
         setPage(page)
         console.log(page)
@@ -160,8 +148,8 @@ export default function LkUserContainer() {
 
 
     useEffect(() => {
-        console.log(1)
-        getCampaigns()
+        // getCampaigns()
+        setCampaigns(mockData)
     }, [page])
 
     return (
@@ -186,8 +174,8 @@ export default function LkUserContainer() {
             </div>
             <div className="p-5">
             <AppTableCampaigns 
-            data={mockData || []} 
-            itemRender={item => CampaignItem(item)}
+            data={campaigns || []} 
+            itemRender={item => CampaignItem(item, setSelectedCampaign, selectedCampaign, removeCampaign)}
             />
             <PaginationElement 
             onClickNext={onClickNextPage} 

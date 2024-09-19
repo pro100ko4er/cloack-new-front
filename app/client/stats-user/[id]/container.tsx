@@ -20,7 +20,7 @@ import InputIconComponent from "@/components/controls/inputs/InputIcon";
 import { MonitorDot, Search, Smartphone, Tablet, Tv } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import StatsItem from "@/components/common/stats-item";
+import StatsItem from "@/components/common//renders/stats-item";
 import { Accordion } from "@radix-ui/react-accordion";
 import AppAccordeon from "@/components/controls/app-accordeon";
 import { MultiSelect } from "react-multi-select-component";
@@ -31,6 +31,7 @@ import ios from '../../../../assets/svg-photos/os-icons/ios.svg'
 import macos from '../../../../assets/svg-photos/os-icons/macos.svg'
 import windows from '../../../../assets/svg-photos/os-icons/windows.svg'
 import linux from '../../../../assets/svg-photos/os-icons/linux.svg'
+import { ModalInfo } from "@/components/controls/modals/modal-info";
 
 export default function StatsUserContainer({ params }: { params: { id: string } }) {
 
@@ -182,9 +183,17 @@ export default function StatsUserContainer({ params }: { params: { id: string } 
         <div className="title-page mb-10">
                 <div className="text-3xl bg-card rounded-lg pt-6 pb-6 pl-5 pr-5 success rounded-50 flex items-center justify-between">
                     Statistics of campaign ID {id}
-                    <Button variant={'secondary'}>
+                    {/* <Button variant={'secondary'}>
                         Guest access
-                    </Button>
+                    </Button> */}
+                    <ModalInfo 
+                    title="Guest access"
+                    description={<div className="flex justify-between items-center">http://localhost:3001/client/stats-user/uniq-id<Button variant={'outline'}>Copy</Button><Button variant={'success'}>Update</Button></div>}
+                    showDialogNameButton="Guest access"
+                    confirmButtonName="OK"
+                    onClickConfirm={() => console.log('confirm')}
+                    classNameShowDialogButton="white-text"
+                    />
                     </div>
             </div>
              

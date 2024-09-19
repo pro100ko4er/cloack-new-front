@@ -50,6 +50,9 @@ export interface ICampaignBody {
     referer_referers: string,
     filter_empty_referer: boolean | CheckedState,
     status: boolean | CheckedState,
+    type_load_white_page: string,
+    true_safe: boolean,
+    type_load_black_page: string
 }
 
 export interface ICampaignUpdateBody {

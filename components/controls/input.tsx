@@ -7,15 +7,16 @@ export interface InputComponentProps extends InputProps {
     type?: HTMLInputTypeAttribute,
     placeholder?: string,
     classNameContainer?: string,
-    classNameInput?: string
+    classNameInput?: string,
+    classNameLabel?: string
 }
 
 
 export default function InputComponent(props: InputComponentProps) {
-    const {label, type, placeholder, classNameContainer, classNameInput, ...other} = props
+    const {label, type, placeholder, classNameContainer, classNameInput, classNameLabel, ...other} = props
     return (
         <div className={`grid w-full max-w-sm items-center gap-1.5 ${classNameContainer}`}>
-        <Label htmlFor="email">{label}</Label>
+        <Label className={classNameLabel} htmlFor="email">{label}</Label>
         <Input type={type} id="email" placeholder={placeholder} className={classNameInput} {...other} />
       </div>
     )
